@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<project name="Hudson Demo" default="run">
+    <target name="compile">
+        <javac srcdir="src" destdir="build">
+            <classpath path="lib/servlet-api-2.5.jar"/>
+            <classpath path="lib/jetty-all-7.1.6.v20100715.jar"/>
+        </javac>
+    </target>
+    <target name="package" depends="compile">
+        <jar destfile="hudson-demo.jar">
+            <fileset dir="build"/>
+            <zipfileset src="lib/servlet-api-2.5.jar"/>
+            <zipfileset src="lib/jetty-all-7.1.6.v20100715.jar"/>
+            <manifest>
+                <attribute name="Main-Class"
+                    value="HudsonDemo"/>
+            </manifest>
+        </jar>
+    </target>
+    <target name="serve" depends="package">
+        <java jar="hudson-demo.jar" fork="true" spawn="true"/>
+    </target>
+    <target name="test" depends="serve">
+        <javac srcdir="test" destdir="test">
+            <classpath path="lib/selenium-java-client-driver.jar"/>
+            <classpath path="lib/junit-4.8.2.jar"/>
+        </javac>
+        <junit>
+            <classpath>
+                <pathelement location="lib/junit-4.8.2.jar"/>
+                <pathelement path="lib/selenium-java-client-driver.jar"/>
+                <pathelement path="test"/>
+            </classpath>
+            <test name="SmokeTest" todir="test-reports">
+                <formatter type="xml"/>
+            </test>
+        </junit>
+    </target>
+</project>
